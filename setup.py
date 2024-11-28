@@ -15,12 +15,12 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/the-library-code/dspace-rest-client",
     project_urls={
-        'Documentation': (
-            'https://github.com/the-library-code/dspace-rest-python/blob/main/README.md'
+        "Documentation": (
+            "https://github.com/the-library-code/dspace-rest-python/blob/main/README.md"
         ),
-        'GitHub': 'https://github.com/the-library-code/dspace-rest-python',
-        'Changelog': (
-            'https://github.com/the-library-code/dspace-rest-python/blob/main/CHANGELOG.md'
+        "GitHub": "https://github.com/the-library-code/dspace-rest-python",
+        "Changelog": (
+            "https://github.com/the-library-code/dspace-rest-python/blob/main/CHANGELOG.md"
         ),
     },
     classifiers=[
@@ -33,7 +33,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     packages=["dspace_rest_client"],
-    install_requires=["requests >= 2.32.3",
-                      "pysolr >= 3.10.0"],
+    install_requires=["requests >= 2.32.3", "pysolr >= 3.10.0"],
     python_requires=">=3.8.0",
 )

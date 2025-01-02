@@ -1436,6 +1436,23 @@ class DSpaceClient:
             logging.error("Invalid item UUID: %s", item.uuid)
             return None
 
+    def get_item_metrics(self, item):
+        """
+        Get metrics for an item
+        @param item:    Item object
+        @return:        the raw API response
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return None
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/metrics"
+        try:
+            return self.api_get(url, None, None)
+        except Exception as e:
+            logging.error(f"Error retrieving metrics for item {item.uuid}: {e}")
+            return None
+
     def create_user(self, user, token=None, embeds=None):
         """
         Create a user

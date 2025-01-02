@@ -1626,6 +1626,46 @@ class DSpaceClient:
             )
             return False
 
+    def delete_item_mapped_collection(self, item, collection_uuid):
+        """
+        Remove an existing mapping between an item and a collection
+        @param item: Item object
+        @param collection_uuid: UUID of the collection to unmap
+        @return: True if successful, False otherwise
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return False
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/mappedCollections/{collection_uuid}"
+        try:
+            response = self.api_delete(url, None, retry=False)
+            if response.status_code == 204:
+                logging.info(
+                    f"Successfully removed mapping for item {item.uuid} from collection {collection_uuid}."
+                )
+                return True
+            elif response.status_code == 401:
+                logging.error(f"Unauthorized access for item {item.uuid}")
+            elif response.status_code == 403:
+                logging.error(f"Forbidden access for item {item.uuid}")
+            elif response.status_code == 405:
+                logging.error(f"Method not allowed for item {item.uuid}")
+            elif response.status_code == 422:
+                logging.error(
+                    f"Unprocessable entity for item {item.uuid}: Collection issues"
+                )
+            else:
+                logging.error(
+                    f"Unexpected response for item {item.uuid}: {response.status_code}"
+                )
+            return False
+        except Exception as e:
+            logging.error(
+                f"Error removing mapping for item {item.uuid} from collection {collection_uuid}: {e}"
+            )
+            return False
+
     def get_item_relationships(self, item):
         """
         Get the relationships of a given item

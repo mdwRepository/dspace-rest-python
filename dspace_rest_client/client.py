@@ -1553,7 +1553,7 @@ class DSpaceClient:
         """
         Get the mapped collections of a given item
         @param item: Item object
-        @return: Mapped Collection object
+        @return: List of mapped collections or None if an error occurs
         """
         if not isinstance(item, Item):
             logging.error("Need a valid item")
@@ -1564,8 +1564,21 @@ class DSpaceClient:
             response = self.api_get(url)
             if response.status_code == 200:
                 return parse_json(response)
+            elif response.status_code == 401:
+                logging.error(f"Unauthorized access for item {item.uuid}")
+            elif response.status_code == 403:
+                logging.error(f"Forbidden access for item {item.uuid}")
+            elif response.status_code == 405:
+                logging.error(f"Method not allowed for item {item.uuid}")
+            elif response.status_code == 422:
+                logging.error(
+                    f"Unprocessable entity for item {item.uuid}: Collection issues"
+                )
             else:
-                return None
+                logging.error(
+                    f"Unexpected response for item {item.uuid}: {response.status_code}"
+                )
+            return None
         except Exception as e:
             logging.error(
                 f"Error retrieving mapped collections for item {item.uuid}: {e}"

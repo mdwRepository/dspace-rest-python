@@ -1549,6 +1549,29 @@ class DSpaceClient:
             logging.error(f"Error updating owning collection for item {item.uuid}: {e}")
             return False
 
+    def get_item_mapped_collections(self, item):
+        """
+        Get the mapped collections of a given item
+        @param item: Item object
+        @return: Mapped Collection object
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return None
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/mappedCollections"
+        try:
+            response = self.api_get(url)
+            if response.status_code == 200:
+                return parse_json(response)
+            else:
+                return None
+        except Exception as e:
+            logging.error(
+                f"Error retrieving mapped collections for item {item.uuid}: {e}"
+            )
+            return None
+
     def create_user(self, user, token=None, embeds=None):
         """
         Create a user

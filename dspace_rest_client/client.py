@@ -1499,6 +1499,56 @@ class DSpaceClient:
             )
             return None
 
+    def update_item_owning_collection(
+        self, item, collection_uuid, inherit_policies=False
+    ):
+        """
+        Update the owning collection of a given item.
+        @param item: Item object
+        @param collection_uuid: UUID of the target collection
+        @param inherit_policies: Boolean flag to inherit policies from the target collection
+        @return: True if successful, False otherwise
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return False
+
+        if collection_uuid is None:
+            logging.error("Collection UUID is missing.")
+            return False
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/owningCollection"
+        data = f"{self.API_ENDPOINT}/core/collections/{collection_uuid}"
+        params = {"inheritPolicies": str(inherit_policies).lower()}
+
+        headers = self.request_headers.copy()
+        headers["Content-Type"] = "text/uri-list"
+
+        try:
+            response = self.session.put(url, data=data, params=params, headers=headers)
+            self.update_token(response)
+
+            if response.status_code == 204:
+                logging.info(
+                    f"Item {item.uuid} successfully moved to Collection {collection_uuid}."
+                )
+                return True
+            elif response.status_code == 403 and "CSRF token" in response.text:
+                logging.warning(
+                    "CSRF token issue encountered, retrying with updated token."
+                )
+                return self.update_item_owning_collection(
+                    item, collection_uuid, inherit_policies
+                )
+            else:
+                logging.error(
+                    f"Failed to update owning collection: {response.status_code}: {response.text} ({url})"
+                )
+                return False
+        except Exception as e:
+            logging.error(f"Error updating owning collection for item {item.uuid}: {e}")
+            return False
+
     def create_user(self, user, token=None, embeds=None):
         """
         Create a user

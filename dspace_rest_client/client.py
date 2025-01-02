@@ -1470,8 +1470,15 @@ class DSpaceClient:
                 return response
             elif response.status_code == 204:
                 return "No thumbnail available for this item"
+            elif response.status_code == 401:
+                logging.error(f"Unauthorized access for item {item.uuid}")
+            elif response.status_code == 403:
+                logging.error(f"Forbidden access for item {item.uuid}")
+            elif response.status_code == 404:
+                logging.error(f"Item or thumbnail not found for item {item.uuid}")
             else:
-                return None
+                logging.error(f"Unexpected response for item {item.uuid}: {response.status_code}")
+            return None
         except Exception as e:
             logging.error(f"Error retrieving thumbnail for item {item.uuid}: {e}")
             return None

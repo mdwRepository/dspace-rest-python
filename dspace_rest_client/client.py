@@ -1476,6 +1476,29 @@ class DSpaceClient:
             logging.error(f"Error retrieving thumbnail for item {item.uuid}: {e}")
             return None
 
+    def get_item_owning_collection(self, item):
+        """
+        Get the owning collection of a given item
+        @param item: Item object
+        @return: Owning Collection object
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return None
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/owningCollection"
+        try:
+            response = self.api_get(url)
+            if response.status_code == 200:
+                return Collection(api_resource=parse_json(response))
+            else:
+                return None
+        except Exception as e:
+            logging.error(
+                f"Error retrieving owning collection for item {item.uuid}: {e}"
+            )
+            return None
+
     def create_user(self, user, token=None, embeds=None):
         """
         Create a user

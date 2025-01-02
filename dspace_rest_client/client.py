@@ -1448,7 +1448,19 @@ class DSpaceClient:
 
         url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/metrics"
         try:
-            return self.api_get(url, None, None)
+            response = self.api_get(url)
+            if response.status_code == 200:
+                return response.json()
+            elif response.status_code == 401:
+                logging.error(f"Unauthorized access for item {item.uuid}")
+            elif response.status_code == 403:
+                logging.error(f"Forbidden access for item {item.uuid}")
+            elif response.status_code == 404:
+                logging.error(f"Item or metrics not found for item {item.uuid}")
+            else:
+                logging.error(
+                    f"Unexpected response for item {item.uuid}: {response.status_code}"
+                )
         except Exception as e:
             logging.error(f"Error retrieving metrics for item {item.uuid}: {e}")
             return None
@@ -1477,7 +1489,9 @@ class DSpaceClient:
             elif response.status_code == 404:
                 logging.error(f"Item or thumbnail not found for item {item.uuid}")
             else:
-                logging.error(f"Unexpected response for item {item.uuid}: {response.status_code}")
+                logging.error(
+                    f"Unexpected response for item {item.uuid}: {response.status_code}"
+                )
             return None
         except Exception as e:
             logging.error(f"Error retrieving thumbnail for item {item.uuid}: {e}")

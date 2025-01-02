@@ -1572,6 +1572,27 @@ class DSpaceClient:
             )
             return None
 
+    def get_item_relationships(self, item):
+        """
+        Get the relationships of a given item
+        @param item: Item object
+        @return: Relationships object
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return None
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/relationships"
+        try:
+            response = self.api_get(url)
+            if response.status_code == 200:
+                return parse_json(response)
+            else:
+                return None
+        except Exception as e:
+            logging.error(f"Error retrieving relationships for item {item.uuid}: {e}")
+            return None
+
     def create_user(self, user, token=None, embeds=None):
         """
         Create a user

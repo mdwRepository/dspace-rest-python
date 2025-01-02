@@ -1453,6 +1453,29 @@ class DSpaceClient:
             logging.error(f"Error retrieving metrics for item {item.uuid}: {e}")
             return None
 
+    def get_item_thumbnail(self, item):
+        """
+        Get thumbnail for an item
+        @param item:    Item object
+        @return:        the raw API response or a message if no thumbnail exists
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return None
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/thumbnail"
+        try:
+            response = self.api_get(url, None, None)
+            if response.status_code == 200:
+                return response
+            elif response.status_code == 204:
+                return "No thumbnail available for this item"
+            else:
+                return None
+        except Exception as e:
+            logging.error(f"Error retrieving thumbnail for item {item.uuid}: {e}")
+            return None
+
     def create_user(self, user, token=None, embeds=None):
         """
         Create a user

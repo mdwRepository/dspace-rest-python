@@ -1593,6 +1593,34 @@ class DSpaceClient:
             logging.error(f"Error retrieving relationships for item {item.uuid}: {e}")
             return None
 
+    def get_item_access_status(self, item):
+        """
+        Get the access status of a given item
+        @param item: Item object
+        @return: Access status as a dictionary or None if an error occurs
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return None
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/accessStatus"
+        try:
+            response = self.api_get(url)
+            if response.status_code == 200:
+                return response.json()
+            elif response.status_code == 400:
+                logging.error(f"Bad Request: Invalid parameter for item {item.uuid}")
+            elif response.status_code == 404:
+                logging.error(f"Item not found: {item.uuid}")
+            else:
+                logging.error(
+                    f"Unexpected response for item {item.uuid}: {response.status_code}"
+                )
+            return None
+        except Exception as e:
+            logging.error(f"Error retrieving access status for item {item.uuid}: {e}")
+            return None
+
     def create_user(self, user, token=None, embeds=None):
         """
         Create a user

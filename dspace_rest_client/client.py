@@ -1585,6 +1585,47 @@ class DSpaceClient:
             )
             return None
 
+    def add_item_mapped_collection(self, item, collection_url):
+        """
+        Add a new mapping between an item and a collection
+        @param item: Item object
+        @param collection_url: URL of the collection to map
+        @return: True if successful, False otherwise
+        """
+        if not isinstance(item, Item):
+            logging.error("Need a valid item")
+            return False
+
+        url = f"{self.API_ENDPOINT}/core/items/{item.uuid}/mappedCollections"
+        try:
+            headers = {"Content-Type": "text/uri-list"}
+            response = self.api_post_uri(url, None, collection_url, retry=False)
+            if response.status_code == 204:
+                logging.info(
+                    f"Successfully added mapping for item {item.uuid} to collection {collection_url}."
+                )
+                return True
+            elif response.status_code == 401:
+                logging.error(f"Unauthorized access for item {item.uuid}")
+            elif response.status_code == 403:
+                logging.error(f"Forbidden access for item {item.uuid}")
+            elif response.status_code == 405:
+                logging.error(f"Method not allowed for item {item.uuid}")
+            elif response.status_code == 422:
+                logging.error(
+                    f"Unprocessable entity for item {item.uuid}: Collection issues"
+                )
+            else:
+                logging.error(
+                    f"Unexpected response for item {item.uuid}: {response.status_code}"
+                )
+            return False
+        except Exception as e:
+            logging.error(
+                f"Error adding mapping for item {item.uuid} to collection {collection_url}: {e}"
+            )
+            return False
+
     def get_item_relationships(self, item):
         """
         Get the relationships of a given item
